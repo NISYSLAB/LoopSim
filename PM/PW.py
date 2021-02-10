@@ -32,7 +32,7 @@ def test():
         files = {'file1': open('./ym', 'rb')}
 
         # POST Request to /pm with ym as file1
-        r = requests.post('http://localhost/ctl', files=files)
+        r = requests.post('http://localhost/ctl/test', files=files)
 
         # output is supposedly the new "u". Maybe not. Let's check.
         logging.info(r.content)
@@ -53,7 +53,7 @@ f = open('./ym', "w")
 f.write('1.0')
 f.close()
 files = {'file1': open('./u', 'rb')}
-r2 = requests.post('http://localhost/ctl', files=files)
+r2 = requests.post('http://localhost/ctl/test', files=files)
 
 if __name__ == '__main__':
     test()
