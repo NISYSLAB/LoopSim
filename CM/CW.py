@@ -49,11 +49,12 @@ def test():
         except ValueError:
             no_skip = False
 
-f = open('./u', "w")
-f.write('1.0')
-f.close()
-files = {'file1': open('./u', 'rb')}
-r2 = requests.post('http://localhost/pm/test', files=files)
+
+def init():
+    initfiles = {'file1': open('./u', 'rb'), 'file2': open('./ym', 'rb')}
+    # POST Request to /init with u as file1 and ym as file2
+    r = requests.post('http://localhost/init/test', files=initfiles)
 
 if __name__ == '__main__':
+    init()
     test()

@@ -49,11 +49,6 @@ def test():
         except ValueError:
             no_skip = False
 
-f = open('./ym', "w")
-f.write('1.0')
-f.close()
-files = {'file1': open('./u', 'rb')}
-r2 = requests.post('http://localhost/ctl/test', files=files)
 
 if __name__ == '__main__':
     test()

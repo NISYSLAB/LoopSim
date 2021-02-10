@@ -77,6 +77,8 @@ $ sudo docker logs -f mediator
 
 Run the controller (CTL and CW). This is currently just a python class functioning as CW with a dummy CTL in it.
 
+CW must be run first as it holds the init() that invokes the POST /init/.
+
 $ cd CM
 
 $ python CW.py
