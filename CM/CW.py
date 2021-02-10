@@ -55,6 +55,12 @@ def init():
     # POST Request to /init with u as file1 and ym as file2
     r = requests.post('http://localhost/init/test', files=initfiles)
 
+def cleanup():
+    # DELETE Request to /cleanup
+    r = requests.delete('http://localhost/cleanup/test')
+
 if __name__ == '__main__':
     init()
     test()
+    # Execute cleanup() only after both CW and PW complete their execution
+    # cleanup()
