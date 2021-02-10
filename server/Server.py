@@ -34,21 +34,16 @@ def hello_world():
 # Run from one of the clients as the initial step
 @app.route('/init/<dirname>', methods=['POST']) # POST has u and ym
 def init(dirname=None):
-    initialized = False
     logging.info("Init Request received for: %s", dirname)
     # Get the file from the POST request
     f1 = request.files['file1']
     f2 = request.files['file2']
     if not (os.path.exists(WORKDIR + secure_filename(dirname))):
         os.makedirs(WORKDIR + secure_filename(dirname))
-        initialized = True
     else:
         files = glob.glob(WORKDIR + secure_filename(dirname) + SEPARATOR + "*")
         for f in files:
             os.remove(f)
-        initialized = True
-    while not initialized:
-        time.sleep(1)
     f1.save(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename))
     f2.save(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f2.filename))
 
