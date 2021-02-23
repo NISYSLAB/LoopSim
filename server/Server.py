@@ -6,8 +6,15 @@ import logging
 import glob
 from flask import jsonify
 import shutil
+from filelock import FileLock
 
-logging.basicConfig(level=logging.INFO)
+TRIMMED_LOGS = False
+
+# Output in a preferred format.
+if TRIMMED_LOGS:
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+else:
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Initialize the flask
 app = Flask(__name__)
@@ -27,6 +34,18 @@ def hello_world():
 # pm -> /pm/test?return=ym
 # Check the init() is executed by confirming the existence of workdir + test
 # Check the content for binary data, executable, "invalid" text.
+
+# Propagating Flask logs back to gunicorn.
+
+# stream_handler = logging.StreamHandler()
+# stream_handler.setLevel(logging.info)
+# app.logger.addHandler(stream_handler)
+
+# stream_handler = logging.StreamHandler()
+# stream_handler.setLevel(logging.WARNING)
+# app.logger.addHandler(stream_handler)
+
+# https://github.com/benoitc/gunicorn/issues/1124
 
 
 
@@ -49,14 +68,26 @@ def init(dirname=None):
     resp = jsonify(success=True)
     return resp
 
+
 # Run when a POST is made to /ctl/<dirname>. For example, /ctl/test
 @app.route('/ctl/<dirname>', methods=['POST'])
 def ctl(dirname=None):
     logging.info("CTL Request received for: %s", dirname)
     # Get the file from the POST request
     f1 = request.files['file1']
-    f1.save(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename))
-    return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'u', mimetype='text/plain')
+    file_content = f1.read()
+    f1.close()
+    logging.info("[CTL] %s", file_content)
+
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename) + ".lock"):
+        logging.info("[CTL] Lock acquired for %s : %s", dirname, f1.filename)
+        with open(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename), 'wb') as file_output:
+            file_output.write(file_content)
+            file_output.close()
+
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + "u" + ".lock"):
+        logging.info("[CTL] Lock acquired for %s : %s", dirname, 'u')
+        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'u', mimetype='text/plain')
 
 
 # Run when a POST is made to /pm/<dirname>. For example, /pm/test
@@ -65,8 +96,19 @@ def pm(dirname=None):
     logging.info("PM request received for: %s", dirname)
     # Get the file from the POST request
     f1 = request.files['file1']
-    f1.save(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename))
-    return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'ym', mimetype='text/plain')
+    file_content = f1.read()
+    f1.close()
+    logging.info("[PM] %s", file_content)
+
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename) + ".lock"):
+        logging.info("[PM] Lock acquired for %s : %s", dirname, f1.filename)
+        with open(WORKDIR + secure_filename(dirname) + SEPARATOR + secure_filename(f1.filename), 'wb') as file_output:
+            file_output.write(file_content)
+            file_output.close()
+
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + "ym" + ".lock"):
+        logging.info("[PM] Lock acquired for %s : %s", dirname, 'ym')
+        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'ym', mimetype='text/plain')
 
 
 # Run from one of the clients as the final step
@@ -78,6 +120,7 @@ def cleanup(dirname=None):
 
     resp = jsonify(success=True)
     return resp
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
