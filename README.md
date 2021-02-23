@@ -62,15 +62,15 @@ $ nohup docker run --name mediator  -p 80:80 mediator > loopsim.out &
 
 Otherwise,
 
-$ sudo docker stop mediator
+$ docker stop mediator
 
-$ sudo docker rm mediator
+$ docker rm mediator
 
-$ nohup sudo docker run --name mediator  -p 80:80 mediator > loopsim.out &
+$ nohup docker run --name mediator  -p 80:80 mediator > loopsim.out &
 
 Check the Server logs.
 
-$ sudo docker logs -f mediator
+$ docker logs -f mediator
 
 
 # Run the clients: CTL and PM.
