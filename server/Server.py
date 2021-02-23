@@ -14,7 +14,8 @@ TRIMMED_LOGS = False
 if TRIMMED_LOGS:
     logging.basicConfig(level=logging.INFO, format='%(message)s')
 else:
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
 
 # Initialize the flask
 app = Flask(__name__)
@@ -27,14 +28,6 @@ WORKDIR = "userfiles/"
 def hello_world():
     return render_template('home.html')
 
-# ctl -> /ctl/test?return=u
-# Check the init() is executed by confirming the existence of WORKDIR + test
-# Check the content for binary data, executable, "invalid" text.
-
-# pm -> /pm/test?return=ym
-# Check the init() is executed by confirming the existence of workdir + test
-# Check the content for binary data, executable, "invalid" text.
-
 # Propagating Flask logs back to gunicorn.
 
 # stream_handler = logging.StreamHandler()
@@ -46,7 +39,6 @@ def hello_world():
 # app.logger.addHandler(stream_handler)
 
 # https://github.com/benoitc/gunicorn/issues/1124
-
 
 
 # Run from one of the clients as the initial step
@@ -69,11 +61,11 @@ def init(dirname=None):
     return resp
 
 
-# Run when a POST is made to /ctl/<dirname>. For example, /ctl/test
+# Run when a POST is made to /ctl/<dirname>?fetch=<returnfile>. For example, /ctl/test?fetch=u
 @app.route('/ctl/<dirname>', methods=['POST'])
 def ctl(dirname=None):
     logging.info("CTL Request received for: %s", dirname)
-    # Get the file from the POST request
+    return_file = request.args.get('fetch')
     f1 = request.files['file1']
     file_content = f1.read()
     f1.close()
@@ -85,16 +77,16 @@ def ctl(dirname=None):
             file_output.write(file_content)
             file_output.close()
 
-    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + "u" + ".lock"):
-        logging.info("[CTL] Lock acquired for %s : %s", dirname, 'u')
-        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'u', mimetype='text/plain')
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + return_file + ".lock"):
+        logging.info("[CTL] Lock acquired for %s : %s", dirname, return_file)
+        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + return_file, mimetype='text/plain')
 
 
-# Run when a POST is made to /pm/<dirname>. For example, /pm/test
+# Run when a POST is made to /pm/<dirname>?fetch=<returnfile>. For example, /pm/test?fetch=ym
 @app.route('/pm/<dirname>', methods=['POST'])
 def pm(dirname=None):
     logging.info("PM request received for: %s", dirname)
-    # Get the file from the POST request
+    return_file = request.args.get('fetch')
     f1 = request.files['file1']
     file_content = f1.read()
     f1.close()
@@ -106,9 +98,9 @@ def pm(dirname=None):
             file_output.write(file_content)
             file_output.close()
 
-    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + "ym" + ".lock"):
-        logging.info("[PM] Lock acquired for %s : %s", dirname, 'ym')
-        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + 'ym', mimetype='text/plain')
+    with FileLock(WORKDIR + secure_filename(dirname) + SEPARATOR + return_file + ".lock"):
+        logging.info("[PM] Lock acquired for %s : %s", dirname, return_file)
+        return send_file(WORKDIR + secure_filename(dirname) + SEPARATOR + return_file, mimetype='text/plain')
 
 
 # Run from one of the clients as the final step

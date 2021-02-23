@@ -32,7 +32,7 @@ def test():
         files = {'file1': open('./ym', 'rb')}
 
         # POST Request to /pm with ym as file1
-        r = requests.post('http://localhost/ctl/test', files=files)
+        r = requests.post('http://localhost/ctl/test?fetch=u', files=files)
 
         # output is supposedly the new "u". Maybe not. Let's check.
         logging.info(r.content)
