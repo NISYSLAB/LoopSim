@@ -12,4 +12,4 @@ RUN useradd mediator && chown -R mediator /mediator
 
 USER mediator
 
-CMD ["gunicorn", "--timeout=180", "--workers=20", "--bind=0.0.0.0:80", "Server:app"]
+CMD ["gunicorn", "--timeout=180", "--workers=20", "--bind=0.0.0.0:80", "--access-logfile=-", "Server:app"]

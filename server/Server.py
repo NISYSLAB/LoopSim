@@ -21,8 +21,6 @@ else:
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
-# https://github.com/benoitc/gunicorn/issues/1124
-
 
 SEPARATOR = "/"
 WORKDIR = "userfiles/"
