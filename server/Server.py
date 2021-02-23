@@ -19,7 +19,6 @@ else:
 
 # Initialize the flask
 app = Flask(__name__)
-# app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 SEPARATOR = "/"
 WORKDIR = "userfiles/"
