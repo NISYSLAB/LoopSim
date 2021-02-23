@@ -19,6 +19,10 @@ else:
 
 # Initialize the flask
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
+# https://github.com/benoitc/gunicorn/issues/1124
+
 
 SEPARATOR = "/"
 WORKDIR = "userfiles/"
@@ -26,13 +30,6 @@ WORKDIR = "userfiles/"
 @app.route('/')
 def hello_world():
     return render_template('home.html')
-
-
-# Propagating Flask logs back to gunicorn.
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.info)
-app.logger.addHandler(stream_handler)
-# https://github.com/benoitc/gunicorn/issues/1124
 
 
 # Run from one of the clients as the initial step
@@ -58,7 +55,7 @@ def init(dirname=None):
 # Run when a POST is made to /ctl/<dirname>?fetch=<returnfile>. For example, /ctl/test?fetch=u
 @app.route('/ctl/<dirname>', methods=['POST'])
 def ctl(dirname=None):
-    logging.info("CTL Request received for: %s", dirname)
+    logging.info("[CTL] Request received for: %s", dirname)
     return_file = request.args.get('fetch')
     f1 = request.files['file1']
     file_content = f1.read()
@@ -79,7 +76,7 @@ def ctl(dirname=None):
 # Run when a POST is made to /pm/<dirname>?fetch=<returnfile>. For example, /pm/test?fetch=ym
 @app.route('/pm/<dirname>', methods=['POST'])
 def pm(dirname=None):
-    logging.info("PM request received for: %s", dirname)
+    logging.info("[PM] request received for: %s", dirname)
     return_file = request.args.get('fetch')
     f1 = request.files['file1']
     file_content = f1.read()
