@@ -19,7 +19,7 @@ else:
 
 # Initialize the flask
 app = Flask(__name__)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+# app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 SEPARATOR = "/"
 WORKDIR = "userfiles/"
@@ -28,16 +28,11 @@ WORKDIR = "userfiles/"
 def hello_world():
     return render_template('home.html')
 
+
 # Propagating Flask logs back to gunicorn.
-
-# stream_handler = logging.StreamHandler()
-# stream_handler.setLevel(logging.info)
-# app.logger.addHandler(stream_handler)
-
-# stream_handler = logging.StreamHandler()
-# stream_handler.setLevel(logging.WARNING)
-# app.logger.addHandler(stream_handler)
-
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.info)
+app.logger.addHandler(stream_handler)
 # https://github.com/benoitc/gunicorn/issues/1124
 
 

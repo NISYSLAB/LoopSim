@@ -1,16 +1,15 @@
-FROM centos:7
-
-RUN yum -y install epel-release && yum clean all
-RUN yum -y install python-pip && yum clean all
-RUN yum -y install unzip && yum clean all
-RUN yum -y install xorg-x11-apps && yum clean all
+FROM centos/python-36-centos7
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
+WORKDIR /mediator
+COPY server /mediator
 
-COPY server /
-WORKDIR /
+USER root
 
+RUN useradd mediator && chown -R mediator /mediator
+
+USER mediator
 
 CMD ["gunicorn", "--timeout=180", "--workers=20", "--bind=0.0.0.0:80", "Server:app"]
