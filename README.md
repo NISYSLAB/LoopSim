@@ -58,7 +58,7 @@ $ docker build -t mediator .
 
 If this is the first execution,
 
-$ nohup docker run --name mediator  -p 80:80 mediator > loopsim.out &
+$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out &
 
 Otherwise,
 
@@ -66,7 +66,7 @@ $ docker stop mediator
 
 $ docker rm mediator
 
-$ nohup docker run --name mediator  -p 80:80 mediator > loopsim.out &
+$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out &
 
 Check the Server logs.
 
