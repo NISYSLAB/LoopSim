@@ -8,9 +8,9 @@ LoopSim is built with is Python-3.7.
 
 ## Install Dependencies
 
-$ pip3 install beautifulsoup4
+`$ pip3 install beautifulsoup4`
 
-$ pip3 install lxml
+`$ pip3 install lxml`
 
 
 ## Run Parser
@@ -22,7 +22,7 @@ Change the line in the GraphParser.py to your reflect your graphml file. By defa
 
 GRAPHML_FILE = "testhg.graphml"
 
-$ python3 GraphParser.py 
+`$ python3 GraphParser.py`
 
 Some sample graphs are provided in the graphs folder. 
 
@@ -44,33 +44,33 @@ edge = [src_node, [dest_nodes]]
 
 Perform Git clone if this is the first time you are configuring LoopSim
 
-$ git clone https://github.com/NISYSLAB/LoopSim.git
+`$ git clone https://github.com/NISYSLAB/LoopSim.git`
 
 Go to the LoopSim folder.
 
-$ cd LoopSim
+`$ cd LoopSim`
 
 First build the Docker Container of the Mediator.
 
-$ git pull
+`$ git pull`
 
-$ docker build -t mediator .
+`$ docker build -t mediator`
 
 If this is the first execution,
 
-$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out &
+`$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out` &
 
 Otherwise,
 
-$ docker stop mediator
+`$ docker stop mediator`
 
-$ docker rm mediator
+`$ docker rm mediator`
 
-$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out &
+`$ nohup docker run --name mediator  -p 80:8081 mediator > loopsim.out` &
 
 Check the Server logs.
 
-$ docker logs -f mediator
+`$ docker logs -f mediator`
 
 
 # Run the clients: CTL and PM.
@@ -79,18 +79,18 @@ Run the controller (CTL and CW). This is currently just a python class functioni
 
 CW must be run first as it holds the init() that invokes the POST /init/.
 
-$ cd CM
+`$ cd CM`
 
-$ python CW.py
+`$ python CW.py`
 
-$ tail -f u
+`$ tail -f u`
 
 Run the PM (PM and PW). This is currently just a python class functioning as PW with a dummy PM in it.
 
-$ cd PM
+`$ cd PM`
 
-$ python PW.py
+`$ python PW.py`
 
-$ tail -f ym
+`$ tail -f ym`
 
 The ordering above does not matter.
