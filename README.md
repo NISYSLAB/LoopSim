@@ -54,7 +54,7 @@ First build the Docker Container of the Mediator.
 
 `$ git pull`
 
-`$ docker build -t mediator`
+`$ docker build . -t mediator`
 
 If this is the first execution,
 
